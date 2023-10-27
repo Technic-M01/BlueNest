@@ -1,0 +1,3 @@
+[submodule "Eggs"]
+	path = Eggs
+	url = git@github.com:Technic-M01/BlueNest-Eggs.git
