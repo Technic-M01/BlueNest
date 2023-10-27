@@ -1,0 +1,40 @@
+{
+    "samples": [
+        {
+            "time_stamp": "10/27/2023-16:15:32",
+            "readings": [
+                {
+                    "Label": "bme-samples",
+                    "samples_taken": 3,
+                    "Temperature": [
+                        69.57,
+                        69.53,
+                        69.6
+                    ],
+                    "Humidity": [
+                        58.83,
+                        58.88,
+                        58.89
+                    ],
+                    "Pressure": [
+                        999.17,
+                        999.17,
+                        999.18
+                    ],
+                    "Altitude": [
+                        117.63,
+                        117.66,
+                        117.76
+                    ]
+                },
+                {
+                    "Label": "Averages",
+                    "Temperature": 69.57,
+                    "Humidity": 58.87,
+                    "Pressure": 999.17,
+                    "Altitude": 117.68
+                }
+            ]
+        }
+    ]
+}
