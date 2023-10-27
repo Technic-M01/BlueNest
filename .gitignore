@@ -76,3 +76,6 @@ venv.bak/
 # Ignore all local history of files
 .history
 .ionide
+
+# Environment Egg Log Files
+logs/
