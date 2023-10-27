@@ -1,17 +1,7 @@
-# connect.py
 
 import asyncio
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
-# from Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper, storeData
-# from ...BlueNest.utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper, storeData
-
-# import pathlib
-# import sys
-# file = pathlib.Path(__file__).resolve().parents[1]
-# print(file)
-# sys.path.append(str(file))
-# from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper, storeData
 
 from egg_link_utils import setUtilPackagePath
 setUtilPackagePath()

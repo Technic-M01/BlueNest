@@ -35,7 +35,6 @@ def logDirExists():
     else:
         return True
 
-
 #TODO make this an inline func.
 def truncateFloat(flt):
     return float(f'{flt:.2f}')
