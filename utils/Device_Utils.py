@@ -166,7 +166,7 @@ class JsonHelper:
         # if os.path.isfile(self.filename):
         if logFile.exists():
             print("file exists")
-            with open(self.filename, 'r') as r:
+            with open(logFile, 'r') as r:
                 data = json.load(r)
 
             data["samples"].append(samples)
