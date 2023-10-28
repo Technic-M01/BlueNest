@@ -7,6 +7,9 @@ from egg_link_utils import setUtilPackagePath
 setUtilPackagePath()
 from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper, storeData
 
+from csv_test import printEnvReadings
+from log_utils import writeData
+
 devInfo = DeviceInformation()
 charBme = devInfo.MyCharacteristics.BME_CHARACTERISTIC
 charLed = devInfo.MyCharacteristics.LED_CHARACTERISTIC
@@ -86,7 +89,8 @@ async def main():
         await client.stop_notify(notifyChar)
         print(f"Disconnecting from device: {device.name} - {device.address}")
 
-    storeData(samplesTaken, bmeReadings)
-
+    # storeData(samplesTaken, bmeReadings)
+    # printEnvReadings(bmeReadings)
+    writeData(samplesTaken, bmeReadings)
 
 asyncio.run(main())
