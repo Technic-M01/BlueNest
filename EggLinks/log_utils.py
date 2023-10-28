@@ -1,16 +1,11 @@
 import pandas as pd
-from datetime import datetime
 from egg_link_utils import setUtilPackagePath
 setUtilPackagePath()
-from utils.Device_Utils import calcAverage
 
 import pathlib
 
-# returns formatted datetime for timestamps
-def getCurrentDateTime():
-    currentDateTime = datetime.now()
-    currentDateTime = currentDateTime.strftime("%m/%d/%Y-%H:%M:%S")
-    return currentDateTime
+from egg_link_utils import getCurrentDateTime
+from egg_link_utils import Log, Converters
 
 TEMP_LABEL = "Temperature"
 HUM_LABEL = "Humidity"
@@ -19,7 +14,7 @@ ALT_LABEL = "Altitude"
 
 ENV_LOG_FILE_NAME = "envreadings.csv"
 
-def checkLogFile():
+def fdasdfsacheckLogFile():
     file = pathlib.Path(__file__).resolve().parents[1]
     logDir = file.joinpath('logs')
     if logDir.exists() == False:
@@ -33,7 +28,7 @@ def checkLogFile():
 
 def writeData(numSamples, readings):
 
-    averages = calcAverage(readings)
+    averages = Converters.calcAverage(readings)
 
     print(readings[TEMP_LABEL])
     print(averages)
@@ -55,7 +50,7 @@ def writeData(numSamples, readings):
 
     print(df.to_string())
     
-    logFile = checkLogFile() 
+    logFile = Log.checkLogFile() 
     print(f"log file: {logFile}")
     if logFile.exists():
         print(f"log file: {ENV_LOG_FILE_NAME} exists.")

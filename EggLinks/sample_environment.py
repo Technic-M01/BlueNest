@@ -5,7 +5,7 @@ from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from egg_link_utils import setUtilPackagePath
 setUtilPackagePath()
-from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper, storeData
+from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
 
 from csv_test import printEnvReadings
 from log_utils import writeData
@@ -89,7 +89,6 @@ async def main():
         await client.stop_notify(notifyChar)
         print(f"Disconnecting from device: {device.name} - {device.address}")
 
-    # storeData(samplesTaken, bmeReadings)
     # printEnvReadings(bmeReadings)
     writeData(samplesTaken, bmeReadings)
 

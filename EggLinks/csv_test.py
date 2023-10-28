@@ -5,7 +5,7 @@ from datetime import datetime
 
 from egg_link_utils import setUtilPackagePath
 setUtilPackagePath()
-from utils.Device_Utils import calcAverage
+# from utils.Device_Utils import calcAverage
 
 
 def writeToFile():
@@ -100,13 +100,13 @@ def printEnvReadings(data):
     readingDict.update(data)
     samplesDict["readings"].append(readingDict)
 
-    avg = calcAverage(data)
+    # avg = calcAverage(data)
 
-    samplesDict["readings"].append(avg)
+    # samplesDict["readings"].append(avg)
 
 
-    df = pd.DataFrame(samplesDict)
-    print(df.to_string())
+    # df = pd.DataFrame(samplesDict)
+    # print(df.to_string())
 
 
 # writeToFile()

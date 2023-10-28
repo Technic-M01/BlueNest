@@ -21,43 +21,10 @@ class DeviceInformation:
     def getCharacteristicUuid(self, characteristic: MyCharacteristics):
         return characteristic.value
 
-def getRootPackagePath():
-    return pathlib.Path(__file__).resolve().parents[1]
-
-
-def logDirExists():
-    file = pathlib.Path(__file__).resolve().parents[1]
-    logDir = file.joinpath('logs')
-    if logDir.exists() == False:
-        print("--- Log Directory Not found. creating 'logs' directory. ---")
-        logDir.mkdir()
-        return False
-    else:
-        return True
 
 #TODO make this an inline func.
 def truncateFloat(flt):
     return float(f'{flt:.2f}')
-
-# returns formatted datetime for timestamps
-def getCurrentDateTime():
-    currentDateTime = datetime.now()
-    currentDateTime = currentDateTime.strftime("%m/%d/%Y-%H:%M:%S")
-    return currentDateTime
-
-#TODO refactor JsonHelper class so writeDataToFile is static method
-def storeData(numSamples, bmeDict):
-    samplesDict = {"time_stamp": getCurrentDateTime(), 
-                   "readings": []}
-    
-    readingDict = {"Label": "bme-samples", "samples_taken": numSamples}
-    readingDict.update(bmeDict)
-    samplesDict["readings"].append(readingDict)
-
-    jHelper = JsonHelper()
-
-    jHelper.writeDataToFile(samplesDict, bmeDict)
-
 
 
 # function to convert byte array to float value and truncate to 2 decimal places.
@@ -108,30 +75,6 @@ def parseEnvironmentReading(data: bytearray, dict):
 
     return environmentSampleDict
 
-# calculates average of all samples taken from bme sensor
-# and returns a dict containing averages of all readings
-def calcAverage(bmeDict):
-    for key in bmeDict.keys():
-        num = sum(bmeDict[key])
-        if key == "Temperature":
-            avgTemp = truncateFloat(num / 3)
-        elif key == "Humidity":
-            avgHum = truncateFloat(num / 3)
-        elif key == "Pressure":
-            avgPress = truncateFloat(num / 3)
-        elif key == "Altitude":
-            avgAlt = truncateFloat(num / 3)
-
-    avgDict = {
-        "Label": "Averages",
-        "Temperature": avgTemp,
-        "Humidity": avgHum,
-        "Pressure": avgPress,
-        "Altitude": avgAlt
-    }
-
-    return avgDict
-
 class JsonHelper:
 
     def __init__(self):
@@ -153,33 +96,6 @@ class JsonHelper:
             print(f"key: {key} is NOT in data")
             return False
         
-
-
-    def writeDataToFile(self, samples, bmeDict):
-        averages = calcAverage(bmeDict)
-        samples["readings"].append(averages)
-
-        logDirFound = logDirExists()
-        logFile = getRootPackagePath().joinpath('logs', self.filename)
-
-        # if os.path.isfile(self.filename):
-        if logFile.exists():
-            print("file exists")
-            with open(logFile, 'r') as r:
-                data = json.load(r)
-
-            data["samples"].append(samples)
-        else:
-            logFile.touch()
-            print("file doesnt exist")
-            newRootDict = {"samples": []}
-            newRootDict["samples"].append(samples)
-            data = newRootDict
-
-
-        with open(logFile, "w") as outfile:
-            outfile.write(json.dumps(data, indent = 4))
-        outfile.close()
 
     def showTimestampEntries(self):
         if os.path.isfile(self.filename):
