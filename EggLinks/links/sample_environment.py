@@ -3,12 +3,21 @@ import asyncio
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
-from egg_link_utils import setUtilPackagePath
-setUtilPackagePath()
-from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
+import EggLinks.link_utils.log_utils as logu
+# from EggLinks import link_utils
+# from ..link_utils import log_utils
+from ..devTests import csv_test
 
-from csv_test import printEnvReadings
-from log_utils import writeData
+# from egg_link_utils import setUtilPackagePath
+# setUtilPackagePath()
+# from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
+# from link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
+from link_utils import Device_Utils
+
+
+
+# from csv_test import printEnvReadings
+# from log_utils import writeData
 
 devInfo = DeviceInformation()
 charBme = devInfo.MyCharacteristics.BME_CHARACTERISTIC
@@ -89,7 +98,8 @@ async def main():
         await client.stop_notify(notifyChar)
         print(f"Disconnecting from device: {device.name} - {device.address}")
 
+    # csv_test.printEnvReadings(bmeReadings)
     # printEnvReadings(bmeReadings)
-    writeData(samplesTaken, bmeReadings)
+    log_utils.writeData(samplesTaken, bmeReadings)
 
 asyncio.run(main())
