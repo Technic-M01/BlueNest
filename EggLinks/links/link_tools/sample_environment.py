@@ -4,103 +4,86 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..link_utils import log_utils
-# from EggLinks import link_utils
-# from ..link_utils import log_utils
 from ..devTests import csv_test
-
-# from egg_link_utils import setUtilPackagePath
-# setUtilPackagePath()
-# from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
-# from link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
 from ..link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
 
+class SampleEnvironment():
+    
+    def __init__(self):
+        self.devInfo = DeviceInformation()
+        self.charBme = self.devInfo.MyCharacteristics.BME_CHARACTERISTIC
+        self.charLed = self.devInfo.MyCharacteristics.LED_CHARACTERISTIC
+        self.bmeReadings = {
+            "Temperature": [],
+            "Humidity": [],
+            "Pressure": [],
+            "Altitude": []
+        }
+        self.samplesTaken = 0
 
 
-# from csv_test import printEnvReadings
-# from log_utils import writeData
+    def __notification_handler(self, characterisitc: BleakGATTCharacteristic, data: bytearray):
+        print(f"BME Notification: {characterisitc.descriptors}, data: {data}")
 
-devInfo = DeviceInformation()
-charBme = devInfo.MyCharacteristics.BME_CHARACTERISTIC
-charLed = devInfo.MyCharacteristics.LED_CHARACTERISTIC
+        envReading = parseEnvironmentReading(data, self.bmeReadings)
+        print(envReading)
+        self.samplesTaken += 1
 
-jHelper = JsonHelper()
-samplesTaken = 0
+    async def __wait_for_samples(self):
+        keepAlive = True
+        while keepAlive:
+            if self.samplesTaken >= 3:
+                print(f">>> Took {self.samplesTaken} samples <<<")
+                keepAlive = False
+            await asyncio.sleep(1.0)
 
-# jHelper.showTimestampEntries()
+    async def connect_and_sample(self):
+        # devInfo.showDetails()
+        print(f"Scanning for device: {self.devInfo.ADDRESS}")
 
-bmeReadings = {
-    "Temperature": [],
-    "Humidity": [],
-    "Pressure": [],
-    "Altitude": []
-}
+        device = await BleakScanner.find_device_by_address(self.devInfo.ADDRESS)
 
-def notification_handler(characterisitc: BleakGATTCharacteristic, data: bytearray):
-    print(f"BME Notification: {characterisitc.descriptors}, data: {data}")
-
-    envReading = parseEnvironmentReading(data, bmeReadings)
-    print(envReading)
-
-    global samplesTaken
-    samplesTaken += 1
-
-async def wait_for_samples():
-    keepAlive = True
-    while keepAlive:
-        global samplesTaken
-        if samplesTaken >= 3:
-            print(f">>> Took {samplesTaken} samples <<<")
-            keepAlive = False
-        await asyncio.sleep(1.0)
-
-
-async def sample_main():
-    # devInfo.showDetails()
-    print(f"Scanning for device: {devInfo.ADDRESS}")
-
-    device = await BleakScanner.find_device_by_address(devInfo.ADDRESS)
-
-    if device is None:
-        print(f"Could not find device with address: {devInfo.ADDRESS}")
-        return
-    else:
-        print(f"Connecting to device: {device.name} - {device.address}")
-
-    # Connect to the Bluetooth device
-    async with BleakClient(device) as client:
-        # Read, write, or do something with the connection
-
-        notifyChar = BleakGATTCharacteristic
-
-        if client.is_connected:
-            print("device connected.")
-            # print(device.details)
+        if device is None:
+            print(f"Could not find device with address: {self.devInfo.ADDRESS}")
+            return
         else:
-            print("device NOT connected.")
+            print(f"Connecting to device: {device.name} - {device.address}")
 
-        for service in client.services:
-            for char in service.characteristics:
-                if char.uuid == devInfo.getCharacteristicUuid(charBme):
-                    print("BME characterisitc found")
+        # Connect to the Bluetooth device
+        async with BleakClient(device) as client:
+            # Read, write, or do something with the connection
 
-                    if "notify" in char.properties:
-                        try:
-                            value = await client.read_gatt_char(char.uuid)
-                            print(f"[BME Char] {char} - {char.properties}, Value: {value}")
-                            await client.start_notify(char, notification_handler)
-                            notifyChar = char
-                        except Exception as e:
-                            print(f"[BME Char] {char} - {char.properties}, ERROR: {e}")
+            notifyChar = BleakGATTCharacteristic
+
+            if client.is_connected:
+                print("device connected.")
+                # print(device.details)
+            else:
+                print("device NOT connected.")
+
+            for service in client.services:
+                for char in service.characteristics:
+                    if char.uuid == self.devInfo.getCharacteristicUuid(self.charBme):
+                        print("BME characterisitc found")
+
+                        if "notify" in char.properties:
+                            try:
+                                value = await client.read_gatt_char(char.uuid)
+                                print(f"[BME Char] {char} - {char.properties}, Value: {value}")
+                                await client.start_notify(char, self.__notification_handler)
+                                notifyChar = char
+                            except Exception as e:
+                                print(f"[BME Char] {char} - {char.properties}, ERROR: {e}")
 
 
-        await wait_for_samples()
+            await self.__wait_for_samples()
 
-        await client.stop_notify(notifyChar)
-        print(f"Disconnecting from device: {device.name} - {device.address}")
+            await client.stop_notify(notifyChar)
+            print(f"Disconnecting from device: {device.name} - {device.address}")
 
-    # csv_test.printEnvReadings(bmeReadings)
-    # printEnvReadings(bmeReadings)
-    log_utils.writeData(samplesTaken, bmeReadings)
+        # csv_test.printEnvReadings(bmeReadings)
+        # printEnvReadings(bmeReadings)
+        log_utils.writeData(self.samplesTaken, self.bmeReadings)
 
 def run_sampling():
-    asyncio.run(sample_main())
+    asyncio.run(SampleEnvironment().connect_and_sample())
