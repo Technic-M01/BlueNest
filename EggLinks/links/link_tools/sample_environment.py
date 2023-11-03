@@ -3,7 +3,7 @@ import asyncio
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
-import EggLinks.link_utils.log_utils as logu
+from ..link_utils import log_utils
 # from EggLinks import link_utils
 # from ..link_utils import log_utils
 from ..devTests import csv_test
@@ -12,7 +12,7 @@ from ..devTests import csv_test
 # setUtilPackagePath()
 # from utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
 # from link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
-from link_utils import Device_Utils
+from ..link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
 
 
 
@@ -54,7 +54,7 @@ async def wait_for_samples():
         await asyncio.sleep(1.0)
 
 
-async def main():
+async def sample_main():
     # devInfo.showDetails()
     print(f"Scanning for device: {devInfo.ADDRESS}")
 
@@ -102,4 +102,5 @@ async def main():
     # printEnvReadings(bmeReadings)
     log_utils.writeData(samplesTaken, bmeReadings)
 
-asyncio.run(main())
+def run_sampling():
+    asyncio.run(sample_main())

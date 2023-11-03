@@ -1,11 +1,11 @@
 import pandas as pd
-from egg_link_utils import setUtilPackagePath
-setUtilPackagePath()
+# from egg_link_utils import setUtilPackagePath
+# setUtilPackagePath()
 
 import pathlib
 
-from egg_link_utils import getCurrentDateTime
-from egg_link_utils import Log, Converters
+from .egg_link_utils import getCurrentDateTime
+from .egg_link_utils import Log, Converters
 
 TEMP_LABEL = "Temperature"
 HUM_LABEL = "Humidity"
@@ -14,7 +14,7 @@ ALT_LABEL = "Altitude"
 
 ENV_LOG_FILE_NAME = "envreadings.csv"
 
-def fdasdfsacheckLogFile():
+def checkLogFile():
     file = pathlib.Path(__file__).resolve().parents[1]
     logDir = file.joinpath('logs')
     if logDir.exists() == False:
