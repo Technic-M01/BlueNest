@@ -1,6 +1,7 @@
 import pathlib
 import sys
 from datetime import datetime
+import struct
 
 ENV_LOG_FILE_NAME = "envreadings.csv"
 
@@ -18,6 +19,54 @@ def getCurrentDateTime():
 #TODO make this an inline func.
 def truncateFloat(flt):
     return float(f'{flt:.2f}')
+
+# function to convert byte array to float value and truncate to 2 decimal places.
+def bytes_to_float(bytes: bytearray, useLittleEndian = True):
+    if useLittleEndian:
+        byteTuple = struct.unpack('>f', bytes)
+    else:
+        byteTuple = struct.unpack('f', bytes)
+
+    # truncatedFloat = float(f'{byteTuple[0]:.2f}')
+    truncatedFloat = truncateFloat(byteTuple[0])
+    return truncatedFloat
+
+# returns a dict of environment readings from BME sensor
+def parseEnvironmentReading(data: bytearray, dict):
+    tempReading = bytearray()
+    humReading = bytearray()
+    pressReading = bytearray()
+    altReading = bytearray()
+
+    iterator = 0
+
+    # set individual sensor reading data into 4 seperate byte arrays
+    for val in data:
+        if iterator <= 3:
+            tempReading.append(val)
+        elif iterator > 3 and iterator <= 7:
+            humReading.append(val)
+        elif iterator > 7 and iterator <= 11:
+            pressReading.append(val)
+        elif iterator > 11 and iterator <= 15:
+            altReading.append(val)
+        
+        iterator += 1
+
+    environmentSampleDict = {"Temperature": bytes_to_float(tempReading),
+                             "Humidity": bytes_to_float(humReading),
+                             "Pressure": bytes_to_float(pressReading),
+                             "Altitude": bytes_to_float(altReading)}
+
+    for key in environmentSampleDict.keys():
+        dict[key].append(environmentSampleDict[key])
+
+    tempReading.clear()
+    humReading.clear()
+    pressReading.clear()
+    altReading.clear()
+
+    return environmentSampleDict
 
 
 class Converters:

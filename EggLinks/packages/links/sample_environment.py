@@ -4,7 +4,7 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..utils.file_utils import LogHandler, EggConfig
-from ..utils.Device_Utils import parseEnvironmentReading
+from ..utils.egg_link_utils import parseEnvironmentReading
 
 class SampleEnvironment():
     
