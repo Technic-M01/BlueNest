@@ -3,12 +3,13 @@ from packages.links.sample_environment import run_sampling
 
 from packages.utils.file_utils import EggConfig, LogHandler
 
-# ec = EggConfig()
-# conf = ec.getEggConfig(name='LEDCallback')
-# ec.getEggCharacterisitc(conf, "led")
+if __name__ == "__main__":
+    # ec = EggConfig()
+    # conf = ec.getEggConfig(name='LEDCallback')
+    # ec.getEggCharacterisitc(conf, "led")
 
-readings = run_sampling()
-print(f"\nbme readings:\n{readings}")
+    readings = run_sampling()
+    print(f"\nbme readings:\n{readings}")
 
-print(f"\nlatest log entry:\n{LogHandler.getLatestLog()}")
-# getWeatherForecast()
+    print(f"\nlatest log entry:\n{LogHandler.getLatestLog()}")
+    # getWeatherForecast()

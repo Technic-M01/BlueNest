@@ -11,7 +11,7 @@ class EggConfig():
         pass
 
     def getConfigFilePath(self):
-        file = pathlib.Path(__file__).resolve().parents[1]
+        file = pathlib.Path(__file__).resolve().parents[2]
         config = file.joinpath('egg_configs.json')
         return config
 
