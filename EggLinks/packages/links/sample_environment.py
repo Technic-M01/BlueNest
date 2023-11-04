@@ -86,7 +86,7 @@ class SampleEnvironment():
         # csv_test.printEnvReadings(bmeReadings)
         # printEnvReadings(bmeReadings)
         LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
-        return self.bmeReadings
+        # return self.bmeReadings
 
 def run_sampling():
     return asyncio.run(SampleEnvironment().connect_and_sample())
