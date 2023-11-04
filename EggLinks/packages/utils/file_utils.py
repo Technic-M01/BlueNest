@@ -56,25 +56,22 @@ class LogHandler():
     def __init__(self):
         pass
 
-
-
     def writeLogFile(self, data, logFileName):
         df = pd.DataFrame(data)
 
-        _logger.info(df.to_string())
-        
+        #path to log file
         logFile = checkLogFile(logFileName) 
-        _logger.info(f"log file: {logFile}")
+        _logger.info(f"log file path: {logFile}")
         if logFile.exists():
-            _logger.info(f"log file: {logFileName} exists.")
             df.to_csv(logFile, header=False, mode='a')
         else:
             logFile.touch()
-            _logger.info(f"log file: {logFileName} doesnt exist.")
             df.to_csv(logFile)
 
-        new_df = pd.read_csv(logFile)
-        _logger.info(f" --- read from csv ---\n{new_df.to_string()}")
+        _logger.info(f"entry written to {logFileName} :\n{df.to_string()}")
+
+        # new_df = pd.read_csv(logFile)
+        # _logger.info(f" --- read from csv ---\n{new_df.to_string()}")
 
     # #TODO add handling for if file doesn't exist
     # @staticmethod

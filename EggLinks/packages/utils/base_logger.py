@@ -1,9 +1,7 @@
 import logging
 from .egg_link_utils import checkLogFile
-from .constants import LOGGING_FILE_NAME
+from .constants import LOGGING_FILE_NAME, TIMESTAMP_FORMAT
 
-#TODO make this better.
-# make one msg method that all other msg methods can inherit from
 class Logger(object):
 
     _initialized = False
@@ -24,7 +22,7 @@ class Logger(object):
 
             handler = logging.FileHandler(file)
             handler.setLevel(logging.INFO)
-            format = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+            format = logging.Formatter("%(asctime)s %(levelname)s %(message)s",datefmt=TIMESTAMP_FORMAT)
             handler.setFormatter(format)
             
             stream = logging.StreamHandler()

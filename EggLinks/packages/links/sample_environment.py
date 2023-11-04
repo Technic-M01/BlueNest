@@ -4,7 +4,7 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..utils.file_utils import LogHandler, EggConfig
-from ..utils.egg_link_utils import parseEnvironmentReading, formatReadings
+from ..utils.egg_link_utils import bytes_to_float, formatReadings
 from ..utils.constants import *
 
 from ..utils.base_logger import Logger
@@ -29,11 +29,49 @@ class SampleEnvironment():
         self.samplesTaken = 0
 
 
+    # returns a dict of environment readings from BME sensor
+    def __parseEnvironmentReading(self, data: bytearray, dict):
+        tempReading = bytearray()
+        humReading = bytearray()
+        pressReading = bytearray()
+        altReading = bytearray()
+
+        iterator = 0
+
+        #TODO implement bitshifting instead of this
+        # set individual sensor reading data into 4 seperate byte arrays
+        for val in data:
+            if iterator <= 3:
+                tempReading.append(val)
+            elif iterator > 3 and iterator <= 7:
+                humReading.append(val)
+            elif iterator > 7 and iterator <= 11:
+                pressReading.append(val)
+            elif iterator > 11 and iterator <= 15:
+                altReading.append(val)
+            
+            iterator += 1
+
+        environmentSampleDict = {"Temperature": bytes_to_float(tempReading),
+                                "Humidity": bytes_to_float(humReading),
+                                "Pressure": bytes_to_float(pressReading),
+                                "Altitude": bytes_to_float(altReading)}
+
+        for key in environmentSampleDict.keys():
+            dict[key].append(environmentSampleDict[key])
+
+        tempReading.clear()
+        humReading.clear()
+        pressReading.clear()
+        altReading.clear()
+
+        return environmentSampleDict
+
     def __notification_handler(self, characterisitc: BleakGATTCharacteristic, data: bytearray):
         # print(f"BME Notification: data: {data}")
 
-        envReading = parseEnvironmentReading(data, self.bmeReadings)
-        _logger.info(f"BME Notification\n\tdata: {data} - parsed data: {envReading}")
+        envReading = self.__parseEnvironmentReading(data, self.bmeReadings)
+        _logger.info(f"BME Notification\n\traw data: {data} | parsed data: {envReading}")
         self.samplesTaken += 1
 
     async def __wait_for_samples(self):
