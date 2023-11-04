@@ -2,22 +2,14 @@ import pandas as pd
 import json
 import pathlib
 
-from .egg_link_utils import getCurrentDateTime
-from .egg_link_utils import Log, Converters
-
-TEMP_LABEL = "Temperature"
-HUM_LABEL = "Humidity"
-PRESS_LABEL = "Pressure"
-ALT_LABEL = "Altitude"
-
-ENV_LOG_FILE_NAME = "envreadings.csv"
+from .constants import *
 
 class EggConfig():
     def __init__(self):
         pass
 
     def getConfigFilePath(self):
-        file = pathlib.Path(__file__).resolve().parents[1]
+        file = pathlib.Path(__file__).resolve().parents[2]
         config = file.joinpath('egg_configs.json')
         return config
 
@@ -59,7 +51,7 @@ class LogHandler():
     def __init__(self):
         pass
 
-    def checkLogFile(self):
+    def checkLogFile(self, logFileName):
         file = pathlib.Path(__file__).resolve().parents[1]
         logDir = file.joinpath('logs')
         if logDir.exists() == False:
@@ -68,54 +60,36 @@ class LogHandler():
         else:
             print("-- log dir exists --")
 
-        return logDir.joinpath(ENV_LOG_FILE_NAME)
+        return logDir.joinpath(logFileName)
 
 
-    def writeLog(self, numSamples, readings):
 
-        averages = Converters.calcAverage(readings)
-
-        print(readings[TEMP_LABEL])
-        print(averages)
-
-        data = {
-            "Timestamp": getCurrentDateTime(),
-            "SampleCount": numSamples,
-            "Temperature": [averages[TEMP_LABEL]],
-            "Humidity": [averages[HUM_LABEL]],
-            "Pressure": [averages[PRESS_LABEL]],
-            "Altitude": [averages[ALT_LABEL]],
-            "TemperatureSamples": [readings[TEMP_LABEL]],
-            "HumiditySamples": [readings[HUM_LABEL]],
-            "PressureSamples": [readings[PRESS_LABEL]],
-            "AltitudeSamples": [readings[ALT_LABEL]]
-        }
-
+    def writeLogFile(self, data, logFileName):
         df = pd.DataFrame(data)
 
         print(df.to_string())
         
-        logFile = Log.checkLogFile() 
+        logFile = self.checkLogFile(logFileName) 
         print(f"log file: {logFile}")
         if logFile.exists():
-            print(f"log file: {ENV_LOG_FILE_NAME} exists.")
+            print(f"log file: {logFileName} exists.")
             df.to_csv(logFile, header=False, mode='a')
         else:
             logFile.touch()
-            print(f"log file: {ENV_LOG_FILE_NAME} doesnt exist.")
+            print(f"log file: {logFileName} doesnt exist.")
             df.to_csv(logFile)
 
         new_df = pd.read_csv(logFile)
         print(f" --- read from csv ---\n{new_df.to_string()}")
 
-    #TODO add handling for if file doesn't exist
-    @staticmethod
-    def getLatestLog():
-            logFile = Log.checkLogFile()
+    # #TODO add handling for if file doesn't exist
+    # @staticmethod
+    # def getLatestLog():
+    #         logFile = Log.checkLogFile()
 
-            df = pd.read_csv(logFile)
-            latest = df.iloc[-1]
-            logDict = latest.to_dict()
-            #pop the log number item passed in by the dataframe
-            logDict.pop(list(logDict.keys())[0])
-            return logDict 
+    #         df = pd.read_csv(logFile)
+    #         latest = df.iloc[-1]
+    #         logDict = latest.to_dict()
+    #         #pop the log number item passed in by the dataframe
+    #         logDict.pop(list(logDict.keys())[0])
+    #         return logDict 

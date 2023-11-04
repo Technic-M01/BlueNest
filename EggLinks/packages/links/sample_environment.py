@@ -4,7 +4,8 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..utils.file_utils import LogHandler, EggConfig
-from ..utils.Device_Utils import parseEnvironmentReading
+from ..utils.egg_link_utils import parseEnvironmentReading, formatReadings
+from ..utils.constants import *
 
 class SampleEnvironment():
     
@@ -25,7 +26,7 @@ class SampleEnvironment():
 
 
     def __notification_handler(self, characterisitc: BleakGATTCharacteristic, data: bytearray):
-        print(f"BME Notification: {characterisitc.descriptors}, data: {data}")
+        print(f"BME Notification: data: {data}")
 
         envReading = parseEnvironmentReading(data, self.bmeReadings)
         print(envReading)
@@ -83,10 +84,6 @@ class SampleEnvironment():
             await client.stop_notify(notifyChar)
             print(f"Disconnecting from device: {device.name} - {device.address}")
 
-        # csv_test.printEnvReadings(bmeReadings)
         # printEnvReadings(bmeReadings)
-        LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
-        return self.bmeReadings
 
-def run_sampling():
-    return asyncio.run(SampleEnvironment().connect_and_sample())
+        LogHandler().writeLogFile(formatReadings(self.bmeReadings, self.samplesTaken), ENV_LOG_FILE_NAME)

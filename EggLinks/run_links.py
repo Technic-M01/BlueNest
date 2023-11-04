@@ -1,14 +1,14 @@
-from packages.links.weather_forecast import getWeatherForecast
-from packages.links.sample_environment import run_sampling
+from packages.links.weather_forecast import WeatherForecast
+from packages.links.sample_environment import SampleEnvironment
 
-from packages.utils.file_utils import EggConfig, LogHandler
 
-# ec = EggConfig()
-# conf = ec.getEggConfig(name='LEDCallback')
-# ec.getEggCharacterisitc(conf, "led")
+import asyncio
 
-readings = run_sampling()
-print(f"\nbme readings:\n{readings}")
+async def sample_and_forecast():
+    await SampleEnvironment().connect_and_sample()
 
-print(f"\nlatest log entry:\n{LogHandler.getLatestLog()}")
-# getWeatherForecast()
+    await WeatherForecast().getForecast()
+
+
+if __name__ == "__main__":
+    asyncio.run(sample_and_forecast())
