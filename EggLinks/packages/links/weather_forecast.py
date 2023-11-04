@@ -2,6 +2,8 @@ from pyowm import OWM
 from pyowm.utils import config
 from pyowm.utils import timestamps
 from ..utils.egg_link_utils import truncateFloat, getCurrentDateTime
+from ..utils.file_utils import LogHandler
+from ..utils.constants import *
 
 class WeatherForecast():
 
@@ -30,17 +32,17 @@ class WeatherForecast():
         uvmgr = self.owm.uvindex_manager()
         uvi = uvmgr.uvindex_around_coords(self.lat, self.lon)
 
-        wind = {
-            "speed": truncateFloat(w.wind(unit='miles_hour')['speed']),
-            "degrees": w.wind(unit='miles_hour')['deg'],
-            "gust": truncateFloat(w.wind(unit='miles_hour')['gust'])
-        }
+        # wind = {
+        #     "speed": truncateFloat(w.wind(unit='miles_hour')['speed']),
+        #     "degrees": w.wind(unit='miles_hour')['deg'],
+        #     "gust": truncateFloat(w.wind(unit='miles_hour')['gust'])
+        # }
 
         currentTemp = w.temperature('fahrenheit')['temp']
-
         #TODO fix value error that this causes when attempting to make dataframe
         # nested dicts throw a value error when attempting to convert dict to dataframe
         data = {
+            "Timestamp": getCurrentDateTime(),
             "Status": w.detailed_status,
             # "Wind": wind,
             "Wind": truncateFloat(w.wind(unit='miles_hour')['speed']),
@@ -51,11 +53,10 @@ class WeatherForecast():
             # "HeatIndex": w.heat_index,
             "Clouds": w.clouds,
             "Visibility": w.visibility(unit='miles'),
-            "UVIndex": uvi.value
+            "UVIndex": [uvi.value]
         }
 
-        # print(f"Forecast:\n{data}")
-        return data
+        LogHandler().writeLogFile(data, FORECAST_LOG_FILE_NAME)
 
 def getWeatherForecast():
 
@@ -102,5 +103,3 @@ def getWeatherForecast():
     # forecast = mgr.forecast_at_coords(lat, lon, 'daily')
     # forecast = mgr.forecast_at_place('Dallas,US', 'daily')
     # answer = forecast.will_be_clear_at(timestamps.tomorrow())
-
-# getWeatherForecast()

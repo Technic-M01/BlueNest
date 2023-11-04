@@ -82,11 +82,13 @@ def formatReadings(readings, numSamples=None):
     # print(f"data[0]: {list(data.keys())[0]}")
 
     if numSamples is not None:
-        updict = {"SampleCount": numSamples}
+        updict = {"SampleCount": numSamples, "Timestamp": getCurrentDateTime()}
         newData = {**updict, **data}
         return newData
     else:
-        return data
+        updict = {"Timestamp": getCurrentDateTime()}
+        newData = {**updict, **data}
+        return newData
 
 class Converters:
 

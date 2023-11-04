@@ -5,6 +5,7 @@ from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..utils.file_utils import LogHandler, EggConfig
 from ..utils.egg_link_utils import parseEnvironmentReading, formatReadings
+from ..utils.constants import *
 
 class SampleEnvironment():
     
@@ -83,13 +84,9 @@ class SampleEnvironment():
             await client.stop_notify(notifyChar)
             print(f"Disconnecting from device: {device.name} - {device.address}")
 
-        # csv_test.printEnvReadings(bmeReadings)
         # printEnvReadings(bmeReadings)
 
-        r = formatReadings(self.bmeReadings, self.samplesTaken)
-        # print(f"\n--formatted data--\n{r}")
-        return r
-
+        LogHandler().writeLogFile(formatReadings(self.bmeReadings, self.samplesTaken), ENV_LOG_FILE_NAME)
         # LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
         # return self.bmeReadings
 

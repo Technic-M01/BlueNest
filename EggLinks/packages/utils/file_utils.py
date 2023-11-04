@@ -65,19 +65,20 @@ class LogHandler():
         return logDir.joinpath(logFileName)
 
 
-    def writeCombinedLog(self, data):
+
+    def writeLogFile(self, data, logFileName):
         df = pd.DataFrame(data)
 
         print(df.to_string())
         
-        logFile = self.checkLogFile(COMBINED_LOG_FILE_NAME) 
+        logFile = self.checkLogFile(logFileName) 
         print(f"log file: {logFile}")
         if logFile.exists():
-            print(f"log file: {COMBINED_LOG_FILE_NAME} exists.")
+            print(f"log file: {logFileName} exists.")
             df.to_csv(logFile, header=False, mode='a')
         else:
             logFile.touch()
-            print(f"log file: {COMBINED_LOG_FILE_NAME} doesnt exist.")
+            print(f"log file: {logFileName} doesnt exist.")
             df.to_csv(logFile)
 
         new_df = pd.read_csv(logFile)
