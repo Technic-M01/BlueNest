@@ -2,9 +2,7 @@ import pathlib
 import sys
 from datetime import datetime
 import struct
-
-ENV_LOG_FILE_NAME = "envreadings.csv"
-
+from .constants import *
 
 def setUtilPackagePath():
     file = pathlib.Path(__file__).resolve().parents[1]

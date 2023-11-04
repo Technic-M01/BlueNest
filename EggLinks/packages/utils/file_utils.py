@@ -4,13 +4,7 @@ import pathlib
 
 from .egg_link_utils import getCurrentDateTime
 from .egg_link_utils import Log, Converters
-
-TEMP_LABEL = "Temperature"
-HUM_LABEL = "Humidity"
-PRESS_LABEL = "Pressure"
-ALT_LABEL = "Altitude"
-
-ENV_LOG_FILE_NAME = "envreadings.csv"
+from .constants import *
 
 class EggConfig():
     def __init__(self):
