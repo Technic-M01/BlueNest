@@ -4,6 +4,7 @@ import pathlib
 
 from .constants import *
 from .base_logger import Logger
+from .egg_link_utils import checkLogFile
 
 _logger = Logger()
 
@@ -34,11 +35,9 @@ class EggConfig():
                     device = data[key]
                     # print(f"key: {key} value: {data[key]}")
                     if name is not None and name == device.get('name'):
-                        # print(f"device from name {name}: {device}")
                         _logger.info(f"device from name {name}: {device}")
                         return device
                     elif address is not None and address == device.get('address'):
-                        # print(f"device from address {address}: {device}")
                         _logger.info(f"device from address {address}: {device}")
                         return device
                 
@@ -48,26 +47,14 @@ class EggConfig():
     # eggConfig is a dict of a device returned from getEggConfig
     def getEggCharacterisitc(self, eggConfig, characteristicName):
         char = eggConfig["characteristics"].get(characteristicName)
-        # print(f"char name: {characteristicName} uuid: {char}")
         _logger.info(f"char name: {characteristicName} uuid: {char}")
         return char
 
+#TODO make into a singleton
 class LogHandler():
 
     def __init__(self):
         pass
-
-    def checkLogFile(self, logFileName):
-        file = pathlib.Path(__file__).resolve().parents[1]
-        logDir = file.joinpath('logs')
-        if logDir.exists() == False:
-            # print("--- Log Directory Not found. creating 'logs' directory. ---")
-            _logger.warn("Log Directory Not found. creating 'logs' directory.")
-            logDir.mkdir()
-        else:
-            _logger.info("-- log dir exists --")
-
-        return logDir.joinpath(logFileName)
 
 
 
@@ -76,21 +63,17 @@ class LogHandler():
 
         _logger.info(df.to_string())
         
-        logFile = self.checkLogFile(logFileName) 
-        # print(f"log file: {logFile}")
+        logFile = checkLogFile(logFileName) 
         _logger.info(f"log file: {logFile}")
         if logFile.exists():
-            # print(f"log file: {logFileName} exists.")
             _logger.info(f"log file: {logFileName} exists.")
             df.to_csv(logFile, header=False, mode='a')
         else:
             logFile.touch()
-            # print(f"log file: {logFileName} doesnt exist.")
             _logger.info(f"log file: {logFileName} doesnt exist.")
             df.to_csv(logFile)
 
         new_df = pd.read_csv(logFile)
-        # print(f" --- read from csv ---\n{new_df.to_string()}")
         _logger.info(f" --- read from csv ---\n{new_df.to_string()}")
 
     # #TODO add handling for if file doesn't exist

@@ -20,8 +20,6 @@ class SampleEnvironment():
         self.charBme = conf.getEggCharacterisitc(self.eggConfig, 'bme')
         self.charLed = conf.getEggCharacterisitc(self.eggConfig, 'led')
 
-        # self.logger = Logger()
-
         self.bmeReadings = {
             "Temperature": [],
             "Humidity": [],
@@ -36,8 +34,6 @@ class SampleEnvironment():
 
         envReading = parseEnvironmentReading(data, self.bmeReadings)
         _logger.info(f"BME Notification\n\tdata: {data} - parsed data: {envReading}")
-
-        # _logger.info(envReading)
         self.samplesTaken += 1
 
     async def __wait_for_samples(self):

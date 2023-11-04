@@ -25,6 +25,18 @@ def bytes_to_float(bytes: bytearray, useLittleEndian = True):
     truncatedFloat = truncateFloat(byteTuple[0])
     return truncatedFloat
 
+def checkLogFile(logFileName):
+    file = pathlib.Path(__file__).resolve().parents[1]
+    logDir = file.joinpath('logs')
+    if logDir.exists() == False:
+        # _logger.warn("Log Directory Not found. creating 'logs' directory.")
+        logDir.mkdir()
+    # else:
+    #     _logger.info("-- log dir exists --")
+
+    return logDir.joinpath(logFileName)
+
+
 # returns a dict of environment readings from BME sensor
 def parseEnvironmentReading(data: bytearray, dict):
     tempReading = bytearray()
