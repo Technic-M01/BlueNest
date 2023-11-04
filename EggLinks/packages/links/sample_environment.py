@@ -3,8 +3,8 @@ import asyncio
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
-from ..link_utils.file_utils import LogHandler, EggConfig
-from ..link_utils.Device_Utils import parseEnvironmentReading
+from ..utils.file_utils import LogHandler, EggConfig
+from ..utils.Device_Utils import parseEnvironmentReading
 
 class SampleEnvironment():
     
