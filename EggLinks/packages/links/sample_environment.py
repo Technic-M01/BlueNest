@@ -4,8 +4,12 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..utils.file_utils import LogHandler, EggConfig
-from ..utils.egg_link_utils import parseEnvironmentReading, formatReadings
+from ..utils.egg_link_utils import bytes_to_float, formatReadings
 from ..utils.constants import *
+
+from ..utils.base_logger import Logger
+
+_logger = Logger()
 
 class SampleEnvironment():
     
@@ -25,32 +29,70 @@ class SampleEnvironment():
         self.samplesTaken = 0
 
 
-    def __notification_handler(self, characterisitc: BleakGATTCharacteristic, data: bytearray):
-        print(f"BME Notification: data: {data}")
+    # returns a dict of environment readings from BME sensor
+    def __parseEnvironmentReading(self, data: bytearray, dict):
+        tempReading = bytearray()
+        humReading = bytearray()
+        pressReading = bytearray()
+        altReading = bytearray()
 
-        envReading = parseEnvironmentReading(data, self.bmeReadings)
-        print(envReading)
+        iterator = 0
+
+        #TODO implement bitshifting instead of this
+        # set individual sensor reading data into 4 seperate byte arrays
+        for val in data:
+            if iterator <= 3:
+                tempReading.append(val)
+            elif iterator > 3 and iterator <= 7:
+                humReading.append(val)
+            elif iterator > 7 and iterator <= 11:
+                pressReading.append(val)
+            elif iterator > 11 and iterator <= 15:
+                altReading.append(val)
+            
+            iterator += 1
+
+        environmentSampleDict = {"Temperature": bytes_to_float(tempReading),
+                                "Humidity": bytes_to_float(humReading),
+                                "Pressure": bytes_to_float(pressReading),
+                                "Altitude": bytes_to_float(altReading)}
+
+        for key in environmentSampleDict.keys():
+            dict[key].append(environmentSampleDict[key])
+
+        tempReading.clear()
+        humReading.clear()
+        pressReading.clear()
+        altReading.clear()
+
+        return environmentSampleDict
+
+    def __notification_handler(self, characterisitc: BleakGATTCharacteristic, data: bytearray):
+        # print(f"BME Notification: data: {data}")
+
+        envReading = self.__parseEnvironmentReading(data, self.bmeReadings)
+        _logger.info(f"BME Notification\n\traw data: {data} | parsed data: {envReading}")
         self.samplesTaken += 1
 
     async def __wait_for_samples(self):
         keepAlive = True
         while keepAlive:
             if self.samplesTaken >= 3:
-                print(f">>> Took {self.samplesTaken} samples <<<")
+                _logger.info(f"Sampling complete. Took {self.samplesTaken} samples.")
                 keepAlive = False
             await asyncio.sleep(1.0)
 
     async def connect_and_sample(self):
         # devInfo.showDetails()
-        print(f"Scanning for device: {self.eggConfig.get('address')}")
+        _logger.info(f"Scanning for device: {self.eggConfig.get('address')}")
 
         device = await BleakScanner.find_device_by_address(self.eggConfig.get('address'))
 
         if device is None:
-            print(f"Could not find device with address: {self.eggConfig.get('address')}")
+            _logger.warn(f"Could not find device with address: {self.eggConfig.get('address')}")
             return
         else:
-            print(f"Connecting to device: {device.name} - {device.address}")
+            _logger.info(f"Connecting to device: {device.name} - {device.address}")
 
         # Connect to the Bluetooth device
         async with BleakClient(device) as client:
@@ -59,30 +101,30 @@ class SampleEnvironment():
             notifyChar = BleakGATTCharacteristic
 
             if client.is_connected:
-                print("device connected.")
+                _logger.info("device connected.")
                 # print(device.details)
             else:
-                print("device NOT connected.")
+                _logger.warn("device NOT connected.")
 
             for service in client.services:
                 for char in service.characteristics:
                     if char.uuid == self.charBme:
-                        print("BME characterisitc found")
+                        _logger.info("BME characterisitc found")
 
                         if "notify" in char.properties:
                             try:
                                 value = await client.read_gatt_char(char.uuid)
-                                print(f"[BME Char] {char} - {char.properties}, Value: {value}")
+                                _logger.info(f"[BME Char] {char} - {char.properties}, Value: {value}")
                                 await client.start_notify(char, self.__notification_handler)
                                 notifyChar = char
                             except Exception as e:
-                                print(f"[BME Char] {char} - {char.properties}, ERROR: {e}")
+                                _logger.error(f"[BME Char] {char} - {char.properties}, ERROR: {e}")
 
 
             await self.__wait_for_samples()
 
             await client.stop_notify(notifyChar)
-            print(f"Disconnecting from device: {device.name} - {device.address}")
+            _logger.info(f"Disconnecting from device: {device.name} - {device.address}")
 
         # printEnvReadings(bmeReadings)
 

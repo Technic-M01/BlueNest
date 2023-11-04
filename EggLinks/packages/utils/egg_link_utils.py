@@ -1,5 +1,4 @@
 import pathlib
-import sys
 from datetime import datetime
 import struct
 from .constants import *
@@ -7,7 +6,7 @@ from .constants import *
 # returns formatted datetime for timestamps
 def getCurrentDateTime():
     currentDateTime = datetime.now()
-    currentDateTime = currentDateTime.strftime("%m/%d/%Y-%H:%M:%S")
+    currentDateTime = currentDateTime.strftime(TIMESTAMP_FORMAT)
     return currentDateTime
 
 #TODO make this an inline func.
@@ -25,42 +24,16 @@ def bytes_to_float(bytes: bytearray, useLittleEndian = True):
     truncatedFloat = truncateFloat(byteTuple[0])
     return truncatedFloat
 
-# returns a dict of environment readings from BME sensor
-def parseEnvironmentReading(data: bytearray, dict):
-    tempReading = bytearray()
-    humReading = bytearray()
-    pressReading = bytearray()
-    altReading = bytearray()
+def checkLogFile(logFileName):
+    file = pathlib.Path(__file__).resolve().parents[1]
+    logDir = file.joinpath('logs')
+    if logDir.exists() == False:
+        # _logger.warn("Log Directory Not found. creating 'logs' directory.")
+        logDir.mkdir()
+    # else:
+    #     _logger.info("-- log dir exists --")
 
-    iterator = 0
-
-    # set individual sensor reading data into 4 seperate byte arrays
-    for val in data:
-        if iterator <= 3:
-            tempReading.append(val)
-        elif iterator > 3 and iterator <= 7:
-            humReading.append(val)
-        elif iterator > 7 and iterator <= 11:
-            pressReading.append(val)
-        elif iterator > 11 and iterator <= 15:
-            altReading.append(val)
-        
-        iterator += 1
-
-    environmentSampleDict = {"Temperature": bytes_to_float(tempReading),
-                             "Humidity": bytes_to_float(humReading),
-                             "Pressure": bytes_to_float(pressReading),
-                             "Altitude": bytes_to_float(altReading)}
-
-    for key in environmentSampleDict.keys():
-        dict[key].append(environmentSampleDict[key])
-
-    tempReading.clear()
-    humReading.clear()
-    pressReading.clear()
-    altReading.clear()
-
-    return environmentSampleDict
+    return logDir.joinpath(logFileName)
 
 def formatReadings(readings, numSamples=None):
     averages = Converters.calcAverage(readings)
@@ -78,7 +51,7 @@ def formatReadings(readings, numSamples=None):
     # print(f"data[0]: {list(data.keys())[0]}")
 
     if numSamples is not None:
-        updict = {"SampleCount": numSamples, "Timestamp": getCurrentDateTime()}
+        updict = {"Timestamp": getCurrentDateTime(), "SampleCount": numSamples}
         newData = {**updict, **data}
         return newData
     else:

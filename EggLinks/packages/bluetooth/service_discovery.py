@@ -6,7 +6,7 @@ import logging
 
 from bleak import BleakClient, BleakScanner
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 
@@ -16,7 +16,8 @@ def main(device_name: Annotated[str, typer.Option("--name")]):
     asyncio.run(async_main(device_name))
 
 async def async_main(dev_name: str):
-    logger.info("starting scan...")
+    # logger.info("starting scan...")
+    print("starting scan...")
 
     if dev_name is None:
         print("No device found with that name")
