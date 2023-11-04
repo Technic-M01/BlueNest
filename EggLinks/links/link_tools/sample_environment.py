@@ -3,16 +3,23 @@ import asyncio
 from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
-from ..link_utils import log_utils
+from ..link_utils.file_utils import LogHandler, EggConfig
 from ..devTests import csv_test
 from ..link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
 
 class SampleEnvironment():
     
     def __init__(self):
-        self.devInfo = DeviceInformation()
-        self.charBme = self.devInfo.MyCharacteristics.BME_CHARACTERISTIC
-        self.charLed = self.devInfo.MyCharacteristics.LED_CHARACTERISTIC
+        conf = EggConfig()
+
+        self.eggConfig = conf.getEggConfig(name="LEDCallback")
+        self.charBme = conf.getEggCharacterisitc(self.eggConfig, 'bme')
+        self.charLed = conf.getEggCharacterisitc(self.eggConfig, 'led')
+
+        # self.devInfo = DeviceInformation()
+        # self.charBme = self.devInfo.MyCharacteristics.BME_CHARACTERISTIC
+        # self.charLed = self.devInfo.MyCharacteristics.LED_CHARACTERISTIC
+        
         self.bmeReadings = {
             "Temperature": [],
             "Humidity": [],
@@ -39,12 +46,12 @@ class SampleEnvironment():
 
     async def connect_and_sample(self):
         # devInfo.showDetails()
-        print(f"Scanning for device: {self.devInfo.ADDRESS}")
+        print(f"Scanning for device: {self.eggConfig.get('address')}")
 
-        device = await BleakScanner.find_device_by_address(self.devInfo.ADDRESS)
+        device = await BleakScanner.find_device_by_address(self.eggConfig.get('address'))
 
         if device is None:
-            print(f"Could not find device with address: {self.devInfo.ADDRESS}")
+            print(f"Could not find device with address: {self.eggConfig.get('address')}")
             return
         else:
             print(f"Connecting to device: {device.name} - {device.address}")
@@ -63,7 +70,7 @@ class SampleEnvironment():
 
             for service in client.services:
                 for char in service.characteristics:
-                    if char.uuid == self.devInfo.getCharacteristicUuid(self.charBme):
+                    if char.uuid == self.charBme:
                         print("BME characterisitc found")
 
                         if "notify" in char.properties:
@@ -83,7 +90,7 @@ class SampleEnvironment():
 
         # csv_test.printEnvReadings(bmeReadings)
         # printEnvReadings(bmeReadings)
-        log_utils.writeData(self.samplesTaken, self.bmeReadings)
+        LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
 
 def run_sampling():
     asyncio.run(SampleEnvironment().connect_and_sample())
