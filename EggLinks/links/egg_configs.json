@@ -1,0 +1,21 @@
+{
+  "device1": {
+    "name": "test",
+    "address": "00:00:00:00:00",
+    "eggtype": "EnvironmentSampling"
+  },
+  "device2": {
+    "name": "test 2",
+    "address": "11:11:11:11:11",
+    "eggtype": "mockdevice"
+  },
+  "bmeEgg": {
+    "name": "LEDCallback",
+    "address": "8E:D1:62:42:A4:0D",
+    "eggtype": "EnvironmentSampling",
+    "characteristics": {
+      "led": "19b10001-e8f2-537e-4f6c-d104768a1214",
+      "bme": "19b10005-e8f2-537e-4f6c-d104768a1214"
+    }
+  }
+}
