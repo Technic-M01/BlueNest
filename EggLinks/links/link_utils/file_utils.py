@@ -107,3 +107,15 @@ class LogHandler():
 
         new_df = pd.read_csv(logFile)
         print(f" --- read from csv ---\n{new_df.to_string()}")
+
+    #TODO add handling for if file doesn't exist
+    @staticmethod
+    def getLatestLog():
+            logFile = Log.checkLogFile()
+
+            df = pd.read_csv(logFile)
+            latest = df.iloc[-1]
+            logDict = latest.to_dict()
+            #pop the log number item passed in by the dataframe
+            logDict.pop(list(logDict.keys())[0])
+            return logDict 

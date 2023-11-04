@@ -5,7 +5,7 @@ from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..link_utils.file_utils import LogHandler, EggConfig
 from ..devTests import csv_test
-from ..link_utils.Device_Utils import DeviceInformation, parseEnvironmentReading, JsonHelper
+from ..link_utils.Device_Utils import parseEnvironmentReading
 
 class SampleEnvironment():
     
@@ -16,10 +16,6 @@ class SampleEnvironment():
         self.charBme = conf.getEggCharacterisitc(self.eggConfig, 'bme')
         self.charLed = conf.getEggCharacterisitc(self.eggConfig, 'led')
 
-        # self.devInfo = DeviceInformation()
-        # self.charBme = self.devInfo.MyCharacteristics.BME_CHARACTERISTIC
-        # self.charLed = self.devInfo.MyCharacteristics.LED_CHARACTERISTIC
-        
         self.bmeReadings = {
             "Temperature": [],
             "Humidity": [],
@@ -91,6 +87,7 @@ class SampleEnvironment():
         # csv_test.printEnvReadings(bmeReadings)
         # printEnvReadings(bmeReadings)
         LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
+        return self.bmeReadings
 
 def run_sampling():
-    asyncio.run(SampleEnvironment().connect_and_sample())
+    return asyncio.run(SampleEnvironment().connect_and_sample())
