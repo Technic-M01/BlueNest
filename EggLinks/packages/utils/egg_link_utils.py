@@ -4,10 +4,6 @@ from datetime import datetime
 import struct
 from .constants import *
 
-def setUtilPackagePath():
-    file = pathlib.Path(__file__).resolve().parents[1]
-    sys.path.append(str(file))
-
 # returns formatted datetime for timestamps
 def getCurrentDateTime():
     currentDateTime = datetime.now()
@@ -117,19 +113,3 @@ class Converters:
         }
 
         return avgDict
-
-
-
-class Log:
-
-    @staticmethod
-    def checkLogFile():
-        file = pathlib.Path(__file__).resolve().parents[1]
-        logDir = file.joinpath('logs')
-        if logDir.exists() == False:
-            print("--- Log Directory Not found. creating 'logs' directory. ---")
-            logDir.mkdir()
-        else:
-            print("-- log dir exists --")
-
-        return logDir.joinpath(ENV_LOG_FILE_NAME)

@@ -32,23 +32,18 @@ class WeatherForecast():
         uvmgr = self.owm.uvindex_manager()
         uvi = uvmgr.uvindex_around_coords(self.lat, self.lon)
 
-        # wind = {
-        #     "speed": truncateFloat(w.wind(unit='miles_hour')['speed']),
-        #     "degrees": w.wind(unit='miles_hour')['deg'],
-        #     "gust": truncateFloat(w.wind(unit='miles_hour')['gust'])
-        # }
+        temp_dict = w.temperature('fahrenheit')
 
-        currentTemp = w.temperature('fahrenheit')['temp']
-        #TODO fix value error that this causes when attempting to make dataframe
-        # nested dicts throw a value error when attempting to convert dict to dataframe
         data = {
             "Timestamp": getCurrentDateTime(),
             "Status": w.detailed_status,
-            # "Wind": wind,
-            "Wind": truncateFloat(w.wind(unit='miles_hour')['speed']),
+            "WindSpeed": truncateFloat(w.wind(unit='miles_hour')['speed']),
+            "WindDegree": w.wind(unit='miles_hour')['deg'],
+            "WindGust": truncateFloat(w.wind(unit='miles_hour')['gust']),
             "Humidity": w.humidity,
-            # "Temperature": w.temperature('fahrenheit'),
-            "Temperature": currentTemp,
+            "Temperature": temp_dict['temp'],
+            "TemperatureMin": temp_dict['temp_min'],
+            "TemperatureMax": temp_dict['temp_max'],
             # "Rain": w.rain,
             # "HeatIndex": w.heat_index,
             "Clouds": w.clouds,

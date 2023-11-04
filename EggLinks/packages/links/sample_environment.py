@@ -26,7 +26,7 @@ class SampleEnvironment():
 
 
     def __notification_handler(self, characterisitc: BleakGATTCharacteristic, data: bytearray):
-        print(f"BME Notification: {characterisitc.descriptors}, data: {data}")
+        print(f"BME Notification: data: {data}")
 
         envReading = parseEnvironmentReading(data, self.bmeReadings)
         print(envReading)
@@ -87,8 +87,3 @@ class SampleEnvironment():
         # printEnvReadings(bmeReadings)
 
         LogHandler().writeLogFile(formatReadings(self.bmeReadings, self.samplesTaken), ENV_LOG_FILE_NAME)
-        # LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
-        # return self.bmeReadings
-
-def run_sampling():
-    return asyncio.run(SampleEnvironment().connect_and_sample())

@@ -2,8 +2,6 @@ import pandas as pd
 import json
 import pathlib
 
-from .egg_link_utils import getCurrentDateTime
-from .egg_link_utils import Log, Converters
 from .constants import *
 
 class EggConfig():
@@ -84,51 +82,14 @@ class LogHandler():
         new_df = pd.read_csv(logFile)
         print(f" --- read from csv ---\n{new_df.to_string()}")
 
-    def writeLog(self, numSamples, readings):
+    # #TODO add handling for if file doesn't exist
+    # @staticmethod
+    # def getLatestLog():
+    #         logFile = Log.checkLogFile()
 
-        averages = Converters.calcAverage(readings)
-
-        print(readings[TEMP_LABEL])
-        print(averages)
-
-        data = {
-            "Timestamp": getCurrentDateTime(),
-            "SampleCount": numSamples,
-            "Temperature": [averages[TEMP_LABEL]],
-            "Humidity": [averages[HUM_LABEL]],
-            "Pressure": [averages[PRESS_LABEL]],
-            "Altitude": [averages[ALT_LABEL]],
-            "TemperatureSamples": [readings[TEMP_LABEL]],
-            "HumiditySamples": [readings[HUM_LABEL]],
-            "PressureSamples": [readings[PRESS_LABEL]],
-            "AltitudeSamples": [readings[ALT_LABEL]]
-        }
-
-        df = pd.DataFrame(data)
-
-        print(df.to_string())
-        
-        logFile = Log.checkLogFile(ENV_LOG_FILE_NAME) 
-        print(f"log file: {logFile}")
-        if logFile.exists():
-            print(f"log file: {ENV_LOG_FILE_NAME} exists.")
-            df.to_csv(logFile, header=False, mode='a')
-        else:
-            logFile.touch()
-            print(f"log file: {ENV_LOG_FILE_NAME} doesnt exist.")
-            df.to_csv(logFile)
-
-        new_df = pd.read_csv(logFile)
-        print(f" --- read from csv ---\n{new_df.to_string()}")
-
-    #TODO add handling for if file doesn't exist
-    @staticmethod
-    def getLatestLog():
-            logFile = Log.checkLogFile()
-
-            df = pd.read_csv(logFile)
-            latest = df.iloc[-1]
-            logDict = latest.to_dict()
-            #pop the log number item passed in by the dataframe
-            logDict.pop(list(logDict.keys())[0])
-            return logDict 
+    #         df = pd.read_csv(logFile)
+    #         latest = df.iloc[-1]
+    #         logDict = latest.to_dict()
+    #         #pop the log number item passed in by the dataframe
+    #         logDict.pop(list(logDict.keys())[0])
+    #         return logDict 
