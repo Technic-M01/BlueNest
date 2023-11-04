@@ -1,0 +1,11 @@
+apt installed python3.8
+apt installed python3-pip, python3.8-venv, python3-venv
+
+followed setup rules from "https://forums.developer.nvidia.com/t/has-anyone-had-success-installing-nomachine-on-their-nano/75535/5"
+to setup headless mode for ubuntu xorg "so i dont have to use xfce"
+
+#added user to bluetooth group with "sudo usermod -a -G bluetooth <username"
+
+followed instructions here: https://github.com/sputnikdev/eclipse-smarthome-bluetooth-binding/issues/9
+
+policy was already in bluetooth.conf, but adding the policy, then adding user to bluetooth group and reloading bluetooth service seemed to fix it??
