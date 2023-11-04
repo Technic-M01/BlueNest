@@ -66,6 +66,27 @@ def parseEnvironmentReading(data: bytearray, dict):
 
     return environmentSampleDict
 
+def formatReadings(readings, numSamples=None):
+    averages = Converters.calcAverage(readings)
+    # print(averages)
+    data = {
+        "Temperature": [averages[TEMP_LABEL]],
+        "Humidity": [averages[HUM_LABEL]],
+        "Pressure": [averages[PRESS_LABEL]],
+        "Altitude": [averages[ALT_LABEL]],
+        "TemperatureSamples": [readings[TEMP_LABEL]],
+        "HumiditySamples": [readings[HUM_LABEL]],
+        "PressureSamples": [readings[PRESS_LABEL]],
+        "AltitudeSamples": [readings[ALT_LABEL]]
+    }
+    # print(f"data[0]: {list(data.keys())[0]}")
+
+    if numSamples is not None:
+        updict = {"SampleCount": numSamples}
+        newData = {**updict, **data}
+        return newData
+    else:
+        return data
 
 class Converters:
 

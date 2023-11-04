@@ -4,7 +4,7 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 from ..utils.file_utils import LogHandler, EggConfig
-from ..utils.egg_link_utils import parseEnvironmentReading
+from ..utils.egg_link_utils import parseEnvironmentReading, formatReadings
 
 class SampleEnvironment():
     
@@ -85,7 +85,12 @@ class SampleEnvironment():
 
         # csv_test.printEnvReadings(bmeReadings)
         # printEnvReadings(bmeReadings)
-        LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
+
+        r = formatReadings(self.bmeReadings, self.samplesTaken)
+        # print(f"\n--formatted data--\n{r}")
+        return r
+
+        # LogHandler().writeLog(self.samplesTaken, self.bmeReadings)
         # return self.bmeReadings
 
 def run_sampling():

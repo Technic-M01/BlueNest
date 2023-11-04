@@ -53,7 +53,7 @@ class LogHandler():
     def __init__(self):
         pass
 
-    def checkLogFile(self):
+    def checkLogFile(self, logFileName):
         file = pathlib.Path(__file__).resolve().parents[1]
         logDir = file.joinpath('logs')
         if logDir.exists() == False:
@@ -62,8 +62,26 @@ class LogHandler():
         else:
             print("-- log dir exists --")
 
-        return logDir.joinpath(ENV_LOG_FILE_NAME)
+        return logDir.joinpath(logFileName)
 
+
+    def writeCombinedLog(self, data):
+        df = pd.DataFrame(data)
+
+        print(df.to_string())
+        
+        logFile = self.checkLogFile(COMBINED_LOG_FILE_NAME) 
+        print(f"log file: {logFile}")
+        if logFile.exists():
+            print(f"log file: {COMBINED_LOG_FILE_NAME} exists.")
+            df.to_csv(logFile, header=False, mode='a')
+        else:
+            logFile.touch()
+            print(f"log file: {COMBINED_LOG_FILE_NAME} doesnt exist.")
+            df.to_csv(logFile)
+
+        new_df = pd.read_csv(logFile)
+        print(f" --- read from csv ---\n{new_df.to_string()}")
 
     def writeLog(self, numSamples, readings):
 
@@ -89,7 +107,7 @@ class LogHandler():
 
         print(df.to_string())
         
-        logFile = Log.checkLogFile() 
+        logFile = Log.checkLogFile(ENV_LOG_FILE_NAME) 
         print(f"log file: {logFile}")
         if logFile.exists():
             print(f"log file: {ENV_LOG_FILE_NAME} exists.")
