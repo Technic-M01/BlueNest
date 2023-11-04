@@ -3,29 +3,12 @@ from datetime import datetime
 import struct
 import json
 import os
-import pathlib
 
 _JSON_FILENAME = "samplejson.json"
-
-class DeviceInformation:
-    ADDRESS = "8E:D1:62:42:A4:0D"
-
-    class MyCharacteristics(Enum):
-        LED_CHARACTERISTIC = "19b10001-e8f2-537e-4f6c-d104768a1214"
-        BME_CHARACTERISTIC = "19b10005-e8f2-537e-4f6c-d104768a1214"
-
-    def showDetails(self):
-        for c in self.MyCharacteristics:
-            print(f"Characteristic: {c.name} - {c.value}")        
-
-    def getCharacteristicUuid(self, characteristic: MyCharacteristics):
-        return characteristic.value
-
 
 #TODO make this an inline func.
 def truncateFloat(flt):
     return float(f'{flt:.2f}')
-
 
 # function to convert byte array to float value and truncate to 2 decimal places.
 def bytes_to_float(bytes: bytearray, useLittleEndian = True):
