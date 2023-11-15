@@ -1,10 +1,9 @@
 import boto3
 import json
-from ..utils.constants import POOL_ID, CLIENT_ID, API_ENDPOINT
-
 from jose import jwt
 import requests
 import botocore.exceptions
+from ..utils.constants import POOL_ID, CLIENT_ID, API_ENDPOINT
 
 EMAIL_ADDR = "mauriciohvvilla1@gmail.com"
 
